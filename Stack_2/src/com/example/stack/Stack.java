@@ -1,9 +1,9 @@
 package com.example.stack;
 
 public class Stack<T> {
-    private T arr[];
+    private final T[] arr;
     private int top;
-    private int capacity;
+    private final int capacity;
 
     public Stack(int size)
     {
