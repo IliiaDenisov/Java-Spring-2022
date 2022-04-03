@@ -54,7 +54,15 @@ public class Busses {
     public Map<String, Set<Integer>> stopsForBus(String target_bus_name) throws Exception {
         Map<String, Set<Integer>> stops_to_busses_to_switch_over =
                 new HashMap<String, Set<Integer>>();
-        Bus target_bus =
+
+        Bus target_bus;
+        int number_of_bus_with_target_name = isThereBusWithThisName(target_bus_name);
+        if (number_of_bus_with_target_name == THEREISNOSUCHBUS)
+            throw new RuntimeException("No bus");
+        else {
+            target_bus = busses.get(number_of_bus_with_target_name);
+        }
+
         for (String stop: target_bus.getStops()) {
             stops_to_busses_to_switch_over.put(stop, nbusesForStop(stop));
         }
@@ -75,8 +83,15 @@ public class Busses {
         return busses_to_sort.stream().sorted().collect(Collectors.toList());
     }
 
-    private int isThereBusWithThisName(String name) {
+    private int isThereBusWithThisName(String target_name) {
         // TODO: add the body
+        int number_of_busses = busses.size();
+        for (int i = 0; i < number_of_busses; i++) {
+            Bus current_bus = busses.get(i);
+            if (Objects.equals(current_bus.getName(), target_name)) {
+                return i;
+            }
+        }
         return THEREISNOSUCHBUS;
     }
 
