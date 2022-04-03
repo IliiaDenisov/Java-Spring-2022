@@ -3,6 +3,7 @@ package com.myPackage;
 import java.util.Arrays;
 import java.util.Objects;
 
+
 public class Bus {
     public Bus(String name, String[] stops, int number) {
         this.stops = stops;
@@ -15,6 +16,9 @@ public class Bus {
     public boolean isTheSameAs(Bus other) {
         return ((Objects.equals(this.name, other.name))
                 && (Arrays.equals(this.stops, other.stops)));
+    }
+    public boolean doesThisStopExists(String stop_to_check) {
+        return Arrays.stream(stops).anyMatch(x -> x == stop_to_check);
     }
     public String[] getStops() {
         return stops;
