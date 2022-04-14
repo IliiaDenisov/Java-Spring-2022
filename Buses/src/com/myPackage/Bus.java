@@ -29,5 +29,4 @@ public class Bus {
     private final String[] stops;
     private final String name;
     private final int number;
-
 }
