@@ -7,9 +7,12 @@ public class Person
 
     public static void main(String[] args) {
         Person Ivan = new Person();
+        Ivan.changeFirstName(2010, "Iran");
+        Ivan.changeFirstName(2011, "Iban");
         Ivan.changeFirstName(2012, "Ivan");
         Ivan.changeLastName(2013, "Debirov");
-        System.out.println(Ivan.getFullName(2013));
+        Ivan.changeLastName(2014, "Denisov");
+        System.out.println(Ivan.getFullNameWithHistory(2010));
     }
     void changeFirstName(int year, String first_name)
     {
@@ -51,7 +54,7 @@ public class Person
         String firstNameHistory = getAllFormattedEntriesBefore(year, namesChangeHistory);
         String secondNameHistory = getAllFormattedEntriesBefore(year, surnamesChangeHistory);
 
-        return firstName + " " + firstNameHistory + " " + secondName + " " + secondNameHistory;
+        return firstName + " " + firstNameHistory + " " + secondName + " " + secondNameHistory + " ";
     }
 
 
@@ -62,16 +65,18 @@ public class Person
         ArrayList<String> entries = new ArrayList<>();
         int n = yearsWhenChangesOccured.size();
         for (int i = 0; i < n; i++) {
-            if (i <= year) {
-                entries.add(dataYearsToStrings.get(i));
+            int currYear = yearsWhenChangesOccured.get(i);
+            if (currYear <= year) {
+                entries.add(dataYearsToStrings.get(currYear));
             } else {
                 break;
             }
         }
 
-        if (entries.size() != 0) {
-           return  "(" + String.join(", ", entries) + ")";
-
+        if (entries.size() > 1) {
+            entries.remove(entries.size() - 1);
+            Set<String> uniqueEntries = new HashSet<String>(entries);
+            return "(" + String.join(", ", uniqueEntries) + ")";
         }
         else {
             return "";
@@ -82,11 +87,25 @@ public class Person
         ArrayList<Integer> yearsWhenChangesOccured = new ArrayList<>(dataYearsToStrings.keySet());
         Collections.sort(yearsWhenChangesOccured);
 
-        for (Integer i : yearsWhenChangesOccured) {
-            if (i <= year) {
-                return dataYearsToStrings.get(i);
-            }
+        int newIndex = findIndex(yearsWhenChangesOccured, year);
+        if (newIndex > 0) {
+            int latestYear = yearsWhenChangesOccured.get(newIndex - 1);
+            return dataYearsToStrings.get(latestYear);
         }
-        return null;
+        else {
+            return "";
+        }
+    }
+
+    private int findIndex(ArrayList<Integer> arr, int K)
+    {
+        int n = arr.size();
+        for(int i = 0; i < n; i++)
+            if (arr.get(i) == K)
+                return i + 1;
+            else if (arr.get(i) >= K)
+                return i;
+        return n;
     }
 }
+
