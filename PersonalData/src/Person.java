@@ -13,6 +13,10 @@ public class Person
         Ivan.changeLastName(2013, "Debirov");
         Ivan.changeLastName(2014, "Denisov");
         System.out.println(Ivan.getFullNameWithHistory(2010));
+        System.out.println(Ivan.getFullNameWithHistory(2011));
+        System.out.println(Ivan.getFullNameWithHistory(2012));
+        System.out.println(Ivan.getFullNameWithHistory(2013));
+        System.out.println(Ivan.getFullNameWithHistory(2014));
     }
     void changeFirstName(int year, String first_name)
     {
