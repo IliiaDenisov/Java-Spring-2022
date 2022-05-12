@@ -7,15 +7,14 @@ public class Person
 
     public static void main(String[] args) {
         Person Ivan = new Person();
+        Ivan.changeFirstName(2008, "Iran");
+        Ivan.changeFirstName(2009, "Iran");
         Ivan.changeFirstName(2010, "Iran");
         Ivan.changeFirstName(2011, "Iban");
         Ivan.changeFirstName(2012, "Ivan");
         Ivan.changeLastName(2013, "Debirov");
         Ivan.changeLastName(2014, "Denisov");
-        System.out.println(Ivan.getFullNameWithHistory(2010));
-        System.out.println(Ivan.getFullNameWithHistory(2011));
-        System.out.println(Ivan.getFullNameWithHistory(2012));
-        System.out.println(Ivan.getFullNameWithHistory(2013));
+
         System.out.println(Ivan.getFullNameWithHistory(2014));
     }
     void changeFirstName(int year, String first_name)
@@ -79,8 +78,9 @@ public class Person
 
         if (entries.size() > 1) {
             entries.remove(entries.size() - 1);
-            Set<String> uniqueEntries = new HashSet<String>(entries);
-            return "(" + String.join(", ", uniqueEntries) + ")";
+
+            eliminateRepeating(entries);
+            return "(" + String.join(", ", entries) + ")";
         }
         else {
             return "";
@@ -100,7 +100,21 @@ public class Person
             return "";
         }
     }
-
+    private void eliminateRepeating(ArrayList<String> entries) {
+        int i = 1;
+        int len = entries.size();
+        while (i < len) {
+            String curr = entries.get(i);
+            String prev = entries.get(i-1);
+            if (curr.equals(prev)) {
+                entries.remove(i);
+            }
+            else {
+                i += 1;
+            }
+            len = entries.size();
+        }
+    }
     private int findIndex(ArrayList<Integer> arr, int K)
     {
         int n = arr.size();
