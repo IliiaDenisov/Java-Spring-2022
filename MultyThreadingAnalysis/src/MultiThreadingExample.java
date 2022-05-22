@@ -1,6 +1,9 @@
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -8,6 +11,11 @@ import java.util.zip.ZipOutputStream;
 public class MultiThreadingExample {
     public static void main(String[] args) {
         File path = new File("E:\\repos\\Java-Spring-2022\\MultyThreadingAnalysis\\directory");
+
+        List<Integer> threadVariants = Arrays.asList(1, 2, 4, 6, 8);
+        // TODO: calculate and find the best
+        HashMap<Integer, Integer> results = new HashMap<>();
+
         MultiThreadingExample test = new MultiThreadingExample(6, path);
         test.start();
     }
@@ -37,6 +45,7 @@ public class MultiThreadingExample {
         System.out.println(n + " files inside the directory");
         int filesInThread = n / numThreads;
         int start, end;
+        List<Thread> threads = new ArrayList<>();
 
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < numThreads; i++) {
@@ -46,43 +55,46 @@ public class MultiThreadingExample {
 
             int finalStart = start;
             int finalEnd = end;
-            System.out.println("Start processing files from " + start + " to " + end);
-            //Thread newThread = new Thread( () -> processListOfFiles(filesInsideDirectory.subList(finalStart, finalEnd)));
-            
+
+            Thread newThread = new Thread( () -> processListOfFiles(filesInsideDirectory.subList(finalStart, finalEnd)));
+            threads.add(newThread);
             newThread.start();
 
         }
 
+
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+            } catch (Throwable throwable) {
+                System.out.println(throwable.toString());
+            }
+        }
         long estimatedTime = System.currentTimeMillis() - startTime;
         System.out.println(estimatedTime);
     }
 
     private void processListOfFiles(List<File> files) {
-        long res = 0;
         for (File file : files) {
-            System.out.println(file);
-            res += calculateHashForFile(file);
+            zipFile(file);
         }
     }
 
     private void zipFile(File textFile) {
         try {
             String name = textFile.getName(); // get it
-            StringBuilder sb = new StringBuilder();
-            sb.append("Test String");
+            String filePath = textFile.toString();
+            String zipPath = this.directory + "\\zipped\\" + name + ".zip";
 
-            File f = new File(this.directory + "\\" + name + ".zip");
-            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(f));
-            ZipEntry e = new ZipEntry(textFile.toString());
-            out.putNextEntry(e);
-
-            byte[] data = sb.toString().getBytes();
-            out.write(data, 0, data.length);
-            out.closeEntry();
-            out.close();
-        } catch (Throwable thr) {
-            System.out.println(thr.toString());
+            try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipPath))) {
+                File fileToZip = new File(filePath);
+                zipOut.putNextEntry(new ZipEntry(fileToZip.getName()));
+                Files.copy(fileToZip.toPath(), zipOut);
+            }
+        } catch (Throwable throwable) {
+            System.out.println(throwable.toString());
         }
+
 
     }
     private long calculateHashForFile(File textFile) {
