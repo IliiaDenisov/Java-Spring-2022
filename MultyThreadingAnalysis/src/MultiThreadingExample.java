@@ -12,12 +12,22 @@ public class MultiThreadingExample {
     public static void main(String[] args) {
         File path = new File("E:\\repos\\Java-Spring-2022\\MultyThreadingAnalysis\\directory");
 
-        List<Integer> threadVariants = Arrays.asList(1, 2, 4, 6, 8);
-        // TODO: calculate and find the best
-        HashMap<Integer, Integer> results = new HashMap<>();
+        List<Integer> numThreadVariants = Arrays.asList(1, 2, 4, 8);
+        HashMap<Integer, Float> results = new HashMap<>();
 
-        MultiThreadingExample test = new MultiThreadingExample(6, path);
-        test.start();
+        int numTests = 5;
+        for (Integer numThreadVariant : numThreadVariants) {
+            Float totalTime = 0.0f;
+            int currNumThreads = numThreadVariant;
+            for (int j = 0; j < numTests; j++) {
+                MultiThreadingExample threadingExample = new MultiThreadingExample(currNumThreads, path);
+                totalTime += threadingExample.start();
+            }
+            Float average = totalTime / numTests;
+            results.put(currNumThreads, average);
+        }
+
+        System.out.println(results);
     }
 
     private int numThreads;
@@ -28,6 +38,9 @@ public class MultiThreadingExample {
         this.numThreads = numThreads;
         this.directory = directory;
         filesInsideDirectory = listFilesForFolder(directory);
+        this.numThreads = numThreads < filesInsideDirectory.size() ? numThreads : 1;
+
+
     }
 
     public List<File> listFilesForFolder(final File folder) {
@@ -40,9 +53,8 @@ public class MultiThreadingExample {
         return listOfFiles;
     }
 
-    public void start() {
+    public long start() {
         int n = filesInsideDirectory.size();
-        System.out.println(n + " files inside the directory");
         int filesInThread = n / numThreads;
         int start, end;
         List<Thread> threads = new ArrayList<>();
@@ -50,8 +62,7 @@ public class MultiThreadingExample {
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < numThreads; i++) {
             start = i * filesInThread;
-            // TODO: fix a bug
-            end = Math.min((i + 1) * filesInThread, n);
+            end = (i < (numThreads - 1)) ? (i + 1) * filesInThread : n;
 
             int finalStart = start;
             int finalEnd = end;
@@ -61,8 +72,6 @@ public class MultiThreadingExample {
             newThread.start();
 
         }
-
-
         for (Thread thread : threads) {
             try {
                 thread.join();
@@ -71,7 +80,7 @@ public class MultiThreadingExample {
             }
         }
         long estimatedTime = System.currentTimeMillis() - startTime;
-        System.out.println(estimatedTime);
+        return estimatedTime;
     }
 
     private void processListOfFiles(List<File> files) {
@@ -82,7 +91,7 @@ public class MultiThreadingExample {
 
     private void zipFile(File textFile) {
         try {
-            String name = textFile.getName(); // get it
+            String name = textFile.getName();
             String filePath = textFile.toString();
             String zipPath = this.directory + "\\zipped\\" + name + ".zip";
 
